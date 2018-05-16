@@ -1,0 +1,45 @@
+---
+title: Population structure
+output:
+  html_document: default
+---
+
+In this script we will run some population structure analyses on the HGDP and 1000G reference samples. 
+The merging of those databases can be found [here](http://tomszar.github.io/HGDP_1000G_Merge).
+
+## Preliminaries
+
+Load packages
+```{r packages, message=FALSE}
+library(snpStats)
+library(tidyverse)
+library(adegenet)
+```
+
+Load databases
+```{r databases, message=FALSE}
+setwd('..')
+path <- getwd()
+setwd(paste(path, "/DataBases/Genotypes", sep = ""))
+sample <- read.plink("hgdp1000ghg19.bed", "hgdp1000ghg19.bim", "hgdp1000ghg19.fam")
+
+setwd(paste(path, "/DataBases/PopInfo", sep = ""))
+pops_hgdp <- read_delim("SampleInformation.txt", delim = "\t")
+colnames(pops_hgdp)[c(1,3,5)] <- c("IID", "pop", "super_pop")
+
+pops_100g <- read_delim("integrated_call_samples_v3.20130502.ALL.panel", delim = "\t")
+colnames(pops_100g)[1] <- "IID"
+
+```
+
+## Cleaning/handling
+
+Ojo, hay que hacer un LD prune antes,
+
+```{r}
+ref_bin <- new("genlight", sample$genotypes)
+#samples_genind <- genind()
+
+#samples_genind@tab <- as.data.frame(sample$genotypes)
+```
+
