@@ -1,0 +1,1 @@
+Here the results from cleaning the genotypes will be pasted
