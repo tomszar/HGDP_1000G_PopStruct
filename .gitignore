@@ -1,8 +1,16 @@
+# Folders
+Results/
+Databases/
+
 #Input files
 #plink files
 *.bed
 *.bim
 *.fam
+*.log
+*.missnp
+*.in
+*.out
 
 #Output files
 
@@ -40,3 +48,9 @@
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
