@@ -1,6 +1,11 @@
-#Output folder
-/DataBases
-/Results
+#Input files
+#plink files
+*.bed
+*.bim
+*.fam
+
+#Output files
+
 
 # History files
 .Rhistory
