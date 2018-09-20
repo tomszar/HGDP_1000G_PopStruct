@@ -24,10 +24,11 @@ Additionally, we generated a second dataset LD pruned, containing 3291 people, a
 
 We ran an Admixture analysis and computed a PCA on the genotype data. 
 We used an LD pruned dataset to ran both analyses.
-The code for the Admixture analysis is [here](), while the PCA is contained in the [QC procedure code](https://nbviewer.jupyter.org/github/tomszar/HGDP_1000G_PopStruct/blob/master/Code/2018-05-CleanSNPs.ipynb))
+The code for the Admixture analysis is [here](https://github.com/tomszar/HGDP_1000G_PopStruct/blob/master/Code/AdmixtureRun.sh), while the PCA is contained in the [QC procedure code](https://nbviewer.jupyter.org/github/tomszar/HGDP_1000G_PopStruct/blob/master/Code/2018-05-CleanSNPs.ipynb))
 
 ## Refined IBD
 
 Another approach was to ran an IBD analysis on the genotype data. 
 To do that, we first phased our data. 
-To keep consistency, we phased them together, although the 1000 Genomes data can be found already phased.
+The script can be seen [here](https://github.com/tomszar/HGDP_1000G_PopStruct/blob/master/Code/PhasingGenos.sh).
+To keep consistency, we phased the HGDP and 1000G together, although the 1000 Genomes data can be found already phased.
