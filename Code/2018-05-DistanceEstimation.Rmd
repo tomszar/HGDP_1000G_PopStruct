@@ -1,86 +1,48 @@
 ---
-title: Population structure
+title: Genetic distances estimation
 output:
   html_document: default
 ---
 
-In this script we will estimate the genetic distance between populations on the HGDP and 1000G reference samples.
+In this script we show the results from the estimation of genetic distances between populations on the HGDP and 1000G reference samples.
 The merging of those databases can be found [here](http://tomszar.github.io/HGDP_1000G_Merge).
+The first approach is to use a Nei distance on the pruned genotypes. 
+The second approach is to compute a pairwise Identity-by-Descent (IBD) estimation of the full set of phased genotypes for all individuals. 
+The total length of shared IBD segments between individuals (in cM) is used as a distance matrix.
+Next, the total segment sharing between individuals between Population 1 and Population 2 is measured as a population-level genetic distance.
 
 ## Preliminaries
 
-Load packages
+Load libraries
 
 ```{r packages, message=FALSE}
 library(tidyverse)
-library(adegenet)
-library(data.table)
-library(ape)
+library(heatmap3)
 ```
 
-Load databases
+Read databases
 
-```{r databases, message=FALSE, warning=FALSE}
+```{r databases}
 setwd('..')
 path <- getwd()
-setwd(paste(path, "/Results/Counts", sep = ""))
-allelecounts <- fread("CleanGenos_strict_wide.frq.strat", sep = ",", header = TRUE, 
-                      data.table = FALSE, index = "Pop")
-rownames(allelecounts) <- allelecounts$Pop
-allelecounts           <- allelecounts[,-c(1,2)]
-
-setwd(paste(path, "/DataBases/PopInfo", sep = ""))
-pops_hgdp <- read_delim("SampleInformation.txt", delim = "\t")[,c(3,5)]
-colnames(pops_hgdp) <- c("pop", "super_pop")
-pops_100g <- read_delim("integrated_call_samples_v3.20130502.ALL.panel", delim = "\t")[,c(2,3)]
-#Getting pop - super_pop relation
-pops <- rbind(unique(pops_100g), unique(pops_hgdp))
-pops <- pops[pops$pop %in% rownames(allelecounts),]
-#Changing super_pop names
-pops$super_pop[pops$super_pop == "AFRICA"]      <- "AFR"
-pops$super_pop[pops$super_pop == "AMERICA"]     <- "AMR"
-pops$super_pop[pops$super_pop == "EAST_ASIA"]   <- "EAS"
-pops$super_pop[pops$super_pop == "EUROPE"]      <- "EUR"
-pops$super_pop[pops$super_pop == "MIDDLE_EAST"] <- "MDE"
-pops$super_pop[pops$super_pop == "OCEANIA"]     <- "OCE"
-pops$super_pop[pops$super_pop == "CENTRAL_SOUTH_ASIA"] <- "SAS"
-
-#counts to genpop
-mygenpop <- genpop(allelecounts, ploidy=as.integer(2), type="codom")
-
-#color palette
-okabeito <- c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-```
-
-## Distance estimation
-
-Estimating Nei's distance
-
-```{r dendogram, fig.height=6, fig.width=12}
-#Getting Nei's distance
-neidist <- dist.genpop(mygenpop)
-#Getting reynold's distance
-reydist <- dist.genpop(mygenpop, method = 3)
-```
-
-Plot dendrograms
-
-```{r}
-labs <- as.data.frame(hclust(neidist)$labels)
-colnames(labs) <- "pop"
-labs <- merge(labs, pops, by = "pop", sort = FALSE)
-labs$super_pop <- as.factor(labs$super_pop)
-levels(labs$super_pop) <- okabeito
-
-#Plot
-plot(as.phylo(hclust(neidist)), type = "fan", tip.color = as.character(labs$super_pop))
-plot(as.phylo(hclust(reydist)), type = "fan", tip.color = as.character(labs$super_pop))
-```
-
-Saving dist object
-
-```{r saving, message=FALSE}
 setwd(paste(path, "/Results/Distances", sep = ""))
-write.csv(as.matrix(neidist), file = "Nei_dist.csv", quote = FALSE)
+neidist <- as.matrix(read.table("Nei_dist.csv", sep=",", header=T, row.names = 1))
+ibddist <- as.matrix(read.table("IBD_dist.csv", sep=",", header=T, row.names = 1))
 ```
 
+## Nei's distance estimation
+
+Heatmap from Nei's distance estimation
+
+```{r nei heatmap, fig.height=12, fig.width=12}
+heatmap(neidist, symm= T)
+```
+
+## IBD-based genetic distance
+
+Heatmap from IBD-based genetic distance estimation
+
+```{r heatmap IBD distance, fig.height=12, fig.width=12}
+diag(ibddist) <- NA
+heatmap(ibddist, symm = T)
+```
